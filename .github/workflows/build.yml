@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        path: source_code
     
     - name: Setup Java
       uses: actions/setup-java@v4
@@ -24,59 +26,67 @@ jobs:
         flutter-version: '3.22.0'
         channel: 'stable'
 
-    - name: Create fresh Flutter project
+    - name: Create and build app
       run: |
+        # إنشاء مشروع جديد في مجلد منفصل
+        cd /tmp
         flutter create --org com.flexyemen --project-name flex_yemen --platforms android .
-        cp -r $GITHUB_WORKSPACE/lib .
-        cp -r $GITHUB_WORKSPACE/assets . 2>/dev/null || true
-        cp $GITHUB_WORKSPACE/pubspec.yaml .
+        
+        # نسخ الكود من مجلد source_code إلى المشروع الجديد
+        cp -r $GITHUB_WORKSPACE/source_code/lib/* lib/
+        cp -r $GITHUB_WORKSPACE/source_code/assets . 2>/dev/null || true
+        cp $GITHUB_WORKSPACE/source_code/pubspec.yaml .
+        
+        # عرض محتويات lib للتأكد من نسخ الكود
+        echo "=== Files in lib/ ==="
+        ls -la lib/
+        echo ""
+        echo "=== Files in lib/screens/ ==="
+        ls -la lib/screens/ 2>/dev/null || echo "No screens folder"
+        
+        # إنشاء المجلدات المطلوبة
         mkdir -p assets/images assets/icons assets/fonts assets/animations
         touch .env
-        ls -la lib/
-
-    - name: Configure Android
-      run: |
-        cat >> android/app/src/main/AndroidManifest.xml << 'MANIFEST'
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-MANIFEST
         
-        cat >> android/app/build.gradle << 'APPGRADLE'
+        # إضافة الأذونات
+        sed -i '/<manifest/a\    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />' android/app/src/main/AndroidManifest.xml
         
-android {
-    ndkVersion "27.0.12077973"
-    compileOptions {
-        coreLibraryDesugaringEnabled true
-    }
-    defaultConfig {
-        multiDexEnabled true
-    }
-    buildTypes {
-        release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        # إضافة NDK و desugaring
+        cat >> android/app/build.gradle << 'APPEND'
+        
+        android {
+            ndkVersion "27.0.12077973"
+            compileOptions {
+                coreLibraryDesugaringEnabled true
+            }
+            defaultConfig {
+                multiDexEnabled true
+            }
+            buildTypes {
+                release {
+                    minifyEnabled true
+                    shrinkResources true
+                }
+            }
         }
-    }
-}
-
-dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
-}
-APPGRADLE
-
-    - name: Build APK
-      run: |
+        
+        dependencies {
+            coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+        }
+APPEND
+        
+        # تثبيت الاعتماديات
         flutter pub get
+        
+        # بناء APK
         flutter build apk --release --split-per-abi
-        ls -la build/app/outputs/flutter-apk/
-
+        
+        # نسخ APK إلى مجلد العمل
+        mkdir -p $GITHUB_WORKSPACE/output
+        cp -r build/app/outputs/flutter-apk/*.apk $GITHUB_WORKSPACE/output/
+        
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-release
-        path: build/app/outputs/flutter-apk/*.apk
+        path: /tmp/flex_yemen/build/app/outputs/flutter-apk/*.apk
