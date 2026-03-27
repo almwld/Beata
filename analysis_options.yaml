@@ -9,10 +9,11 @@ analyzer:
     unused_field: ignore
     duplicate_import: ignore
     depend_on_referenced_packages: ignore
+    prefer_const_constructors: ignore
+    prefer_const_declarations: ignore
+    prefer_const_literals_to_create_immutables: ignore
+    use_build_context_synchronously: ignore
 
 linter:
   rules:
     - avoid_print: false
-    - prefer_const_constructors: false
-    - prefer_const_declarations: false
-    - constant_identifier_names: false

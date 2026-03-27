@@ -1,9 +1,7 @@
-import 'package:flex_yemen/models/rating_model.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_app_bar.dart';
-import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/custom_text_field.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -21,9 +19,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: const CustomAppBar(title: 'تعديل الملف الشخصي'),
+      appBar: AppBar(title: const Text('تعديل الملف الشخصي')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -33,16 +30,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Center(
                 child: Stack(
                   children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: [AppTheme.goldColor, AppTheme.goldLight],
-                        ),
-                      ),
-                      child: const Icon(Icons.person, size: 60, color: Colors.black),
+                    const CircleAvatar(
+                      radius: 50,
+                      backgroundColor: AppTheme.goldColor,
+                      child: Icon(Icons.person, size: 50, color: Colors.white),
                     ),
                     Positioned(
                       bottom: 0,
@@ -60,40 +51,48 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              CustomTextField(
+              TextFormField(
                 controller: _nameController,
-                label: 'الاسم الكامل',
-                prefixIcon: Icons.person_outline,
-                validator: (v) => v?.isEmpty ?? true ? 'الاسم مطلوب' : null,
+                decoration: const InputDecoration(
+                  labelText: 'الاسم الكامل',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) => v?.isEmpty == true ? 'الاسم مطلوب' : null,
               ),
               const SizedBox(height: 16),
-              CustomTextField(
+              TextFormField(
                 controller: _emailController,
-                label: 'البريد الإلكتروني',
-                prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
-                validator: (v) => v?.isEmpty ?? true ? 'البريد مطلوب' : null,
+                decoration: const InputDecoration(
+                  labelText: 'البريد الإلكتروني',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) => v?.isEmpty == true ? 'البريد مطلوب' : null,
               ),
               const SizedBox(height: 16),
-              CustomTextField(
+              TextFormField(
                 controller: _phoneController,
-                label: 'رقم الهاتف',
-                prefixIcon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
-                validator: (v) => v?.isEmpty ?? true ? 'رقم الهاتف مطلوب' : null,
+                decoration: const InputDecoration(
+                  labelText: 'رقم الهاتف',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) => v?.isEmpty == true ? 'رقم الهاتف مطلوب' : null,
               ),
               const SizedBox(height: 16),
-              CustomTextField(
+              TextFormField(
                 controller: _addressController,
-                label: 'العنوان',
-                prefixIcon: Icons.location_on_outlined,
-                validator: (v) => v?.isEmpty ?? true ? 'العنوان مطلوب' : null,
+                decoration: const InputDecoration(
+                  labelText: 'العنوان',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) => v?.isEmpty == true ? 'العنوان مطلوب' : null,
               ),
               const SizedBox(height: 32),
               CustomButton(
                 text: 'حفظ التغييرات',
                 onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
+                  if (_formKey.currentState?.validate() == true) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('تم تحديث الملف الشخصي')),
                     );

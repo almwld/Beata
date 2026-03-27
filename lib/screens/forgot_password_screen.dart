@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import '../services/supabase_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
-  @override State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+
+  @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
@@ -34,7 +35,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'نسيت كلمة المرور'),
+      appBar: AppBar(title: const Text('نسيت كلمة المرور')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: _emailSent
@@ -49,7 +50,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'لقد أرسلنا رابطاً إلى بريدك الإلكتروني. يرجى التحقق منه واتباع التعليمات.',
+                    'لقد أرسلنا رابطاً إلى بريدك الإلكتروني',
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
@@ -68,14 +69,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       style: TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 16),
-                    CustomTextField(
+                    TextFormField(
                       controller: _emailController,
-                      label: 'البريد الإلكتروني',
-                      prefixIcon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: 'البريد الإلكتروني',
+                        border: OutlineInputBorder(),
+                      ),
                       validator: (v) {
-                        if (v!.isEmpty) return 'مطلوب';
-                        if (!v.contains('@')) return 'بريد غير صحيح';
+                        if (v?.isEmpty == true) return 'مطلوب';
+                        if (!v!.contains('@')) return 'بريد غير صحيح';
                         return null;
                       },
                     ),
