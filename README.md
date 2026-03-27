@@ -138,3 +138,4 @@ flutter build appbundle --release
 # Beata
 # Beata
 # Beata
+# trigger rebuild
