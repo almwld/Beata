@@ -24,8 +24,10 @@ jobs:
         
       - name: Regenerate Android folder
         run: |
+          # إصلاح اسم المشروع أولاً
+          sed -i 's/name: flex_yemen/name: beata/' pubspec.yaml
           # حذف android القديم إذا وجد
-          rm -rf android
+          rm -rf android || true
           # إنشاء android جديد
           flutter create --platforms=android .
           
