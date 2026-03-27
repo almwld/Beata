@@ -11,8 +11,9 @@ class TransferScreen extends StatefulWidget {
 }
 
 class _TransferScreenState extends State<TransferScreen> {
-  final _amountController = TextEditingController();
-  final _recipientController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _recipientController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +25,25 @@ class _TransferScreenState extends State<TransferScreen> {
           children: [
             TextField(
               controller: _recipientController,
-              decoration: const InputDecoration(labelText: 'رقم المستلم'),
+              decoration: const InputDecoration(
+                labelText: 'رقم المستلم',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'المبلغ'),
+              decoration: const InputDecoration(
+                labelText: 'المبلغ',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 20),
             CustomButton(
               text: 'تحويل',
-              onPressed: () {},
+              onPressed: _isLoading ? null : () {},
+              isLoading: _isLoading,
             ),
           ],
         ),

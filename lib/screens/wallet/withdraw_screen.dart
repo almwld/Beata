@@ -11,7 +11,8 @@ class WithdrawScreen extends StatefulWidget {
 }
 
 class _WithdrawScreenState extends State<WithdrawScreen> {
-  final _amountController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +25,16 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'المبلغ'),
+              decoration: const InputDecoration(
+                labelText: 'المبلغ',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 20),
             CustomButton(
               text: 'سحب',
-              onPressed: () {},
+              onPressed: _isLoading ? null : () {},
+              isLoading: _isLoading,
             ),
           ],
         ),

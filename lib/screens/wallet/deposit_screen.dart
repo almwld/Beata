@@ -11,7 +11,8 @@ class DepositScreen extends StatefulWidget {
 }
 
 class _DepositScreenState extends State<DepositScreen> {
-  final _amountController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +25,16 @@ class _DepositScreenState extends State<DepositScreen> {
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'المبلغ'),
+              decoration: const InputDecoration(
+                labelText: 'المبلغ',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 20),
             CustomButton(
               text: 'إيداع',
-              onPressed: () {},
+              onPressed: _isLoading ? null : () {},
+              isLoading: _isLoading,
             ),
           ],
         ),

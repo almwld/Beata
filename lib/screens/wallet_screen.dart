@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
-import 'deposit_screen.dart';
-import 'withdraw_screen.dart';
-import 'transfer_screen.dart';
-import 'transactions_screen.dart';
+import 'wallet/deposit_screen.dart';
+import 'wallet/withdraw_screen.dart';
+import 'wallet/transfer_screen.dart';
+import 'wallet/transactions_screen.dart';
 
 class WalletScreen extends StatelessWidget {
   const WalletScreen({super.key});
 
-  final List<Map<String, dynamic>> _services = const [
-    {'name': 'إيداع', 'icon': Icons.add_card, 'color': Colors.orange, 'screen': DepositScreen()},
-    {'name': 'سحب', 'icon': Icons.atm, 'color': Colors.blue, 'screen': WithdrawScreen()},
-    {'name': 'تحويل', 'icon': Icons.swap_horiz, 'color': Colors.green, 'screen': TransferScreen()},
-    {'name': 'عمليات', 'icon': Icons.history, 'color': Colors.teal, 'screen': TransactionsScreen()},
+  final List<Map<String, dynamic>> _services = [
+    {'name': 'إيداع', 'icon': Icons.add_card, 'color': Colors.orange, 'screen': const DepositScreen()},
+    {'name': 'سحب', 'icon': Icons.atm, 'color': Colors.blue, 'screen': const WithdrawScreen()},
+    {'name': 'تحويل', 'icon': Icons.swap_horiz, 'color': Colors.green, 'screen': const TransferScreen()},
+    {'name': 'عمليات', 'icon': Icons.history, 'color': Colors.teal, 'screen': const TransactionsScreen()},
   ];
 
   @override
@@ -32,7 +32,6 @@ class WalletScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // بطاقة الرصيد
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -43,52 +42,32 @@ class WalletScreen extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'الرصيد الحالي',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     '0 ريال',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'آخر تحديث: اليوم',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),
-            ).animate().fadeIn().slideY(begin: 0.2, end: 0),
-            
+            ),
             const SizedBox(height: 24),
-            
-            // عنوان الخدمات
             const Text(
               'الخدمات المالية',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ).animate().fadeIn(delay: const Duration(milliseconds: 200)),
-            
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
-            
-            // قائمة الخدمات
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -101,82 +80,34 @@ class WalletScreen extends StatelessWidget {
               itemCount: _services.length,
               itemBuilder: (context, index) {
                 final service = _services[index];
-                return _ServiceCard(
-                  name: service['name'],
-                  icon: service['icon'],
-                  color: service['color'],
+                return GestureDetector(
                   onTap: () {
-                    final screen = service['screen'] as Widget;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => screen),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => service['screen']));
                   },
-                ).animate().fadeIn(
-                  delay: Duration(milliseconds: 100 + (index * 100)),
-                ).scale();
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? AppTheme.darkSurface : Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: (service['color'] as Color).withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(service['icon'] as IconData, size: 32, color: service['color']),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(service['name'], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                );
               },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ServiceCard extends StatelessWidget {
-  final String name;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _ServiceCard({
-    required this.name,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? AppTheme.darkSurface
-              : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 32,
-                color: color,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              name,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
             ),
           ],
         ),
