@@ -384,7 +384,7 @@ class SupabaseService {
     double amount,
   ) async {
     try {
-      final column = '${currency.toLowerCase()}_balance';
+      // final column = '${currency.toLowerCase()}_balance';
       await client.rpc(
         'update_balance',
         params: {

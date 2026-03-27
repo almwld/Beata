@@ -42,3 +42,4 @@ class _DepositScreenState extends State<DepositScreen> {
     );
   }
 }
+// ignore_for_file: unused_local_variable, unused_import, prefer_final_fields

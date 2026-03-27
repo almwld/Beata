@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'add_rating_screen.dart';
-import 'login_screen.dart';
 
 class ProductRatingsScreen extends StatefulWidget {
   final String productId;
