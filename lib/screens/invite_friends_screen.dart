@@ -1,8 +1,6 @@
-import 'package:flex_yemen/models/rating_model.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_app_bar.dart';
-import 'package:share_plus/share_plus.dart';
 
 class InviteFriendsScreen extends StatelessWidget {
   const InviteFriendsScreen({super.key});
@@ -54,7 +52,11 @@ class InviteFriendsScreen extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.copy, color: AppTheme.goldColor),
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('تم نسخ الرابط')),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -63,7 +65,11 @@ class InviteFriendsScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () => Share.share('انضم إلي على Flex Yemen عبر الرابط: https://flexyemen.app/r/USER123'),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('جاري مشاركة الرابط...')),
+                  );
+                },
                 icon: const Icon(Icons.share),
                 label: const Text('مشاركة الرابط'),
                 style: ElevatedButton.styleFrom(

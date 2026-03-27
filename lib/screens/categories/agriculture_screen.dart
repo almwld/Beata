@@ -1,4 +1,4 @@
-import 'package:flex_yemen/models/rating_model.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/custom_app_bar.dart';
@@ -52,9 +52,9 @@ class AgricultureScreen extends StatelessWidget {
                     child: Icon(cat['icon'] as IconData, color: cat['color']),
                   ),
                   const SizedBox(height: 8),
-                  Text(cat['name'], style: const TextStyle(fontFamily: 'Changa', fontWeight: FontWeight.bold)),
+                  Text(cat['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text('${cat['count']} منتج', style: const TextStyle(fontFamily: 'Changa', fontSize: 11, color: Colors.grey)),
+                  Text('${cat['count']} منتج', style: const TextStyle(fontSize: 11, color: Colors.grey)),
                 ],
               ),
             ),
