@@ -25,36 +25,30 @@ jobs:
 
     - name: Build
       run: |
-        # نسخ جميع الملفات المهمة إلى مجلد مؤقت
+        # إصلاح اسم المشروع في pubspec.yaml أولاً
+        sed -i 's/name: flex_yemen/name: beata/' pubspec.yaml
+        
+        # تغيير جميع الاستيرادات
+        find lib -name "*.dart" -exec sed -i 's/package:flex_yemen/package:beata/g' {} \;
+        
         mkdir /tmp/code
         cp -r lib /tmp/code/
         cp -r assets /tmp/code/ 2>/dev/null || true
         cp pubspec.yaml /tmp/code/
         
-        # حذف android و ios القديمين
         rm -rf android ios
         
-        # إنشاء مشروع Flutter جديد
-        flutter create --org com.flexyemen --project-name flex_yemen --platforms android .
+        flutter create --org com.beata --project-name beata --platforms android .
         
-        # حذف المجلدات الجديدة واستبدالها بالملفات الأصلية
         rm -rf lib assets
         cp -r /tmp/code/lib .
         cp -r /tmp/code/assets . 2>/dev/null || true
         cp /tmp/code/pubspec.yaml .
         
-        # التأكد من وجود جميع المجلدات المطلوبة
         mkdir -p assets/images assets/icons assets/fonts assets/animations
         touch .env
         
-        # ===== عرض محتويات lib للتأكد من وجود models =====
-        echo "=== Contents of lib/ ==="
-        ls -la lib/
-        echo ""
-        echo "=== Contents of lib/models/ ==="
-        ls -la lib/models/ 2>/dev/null || echo "WARNING: lib/models/ not found!"
-        
-        # إضافة flutterEmbedding إلى AndroidManifest
+        # إضافة flutterEmbedding
         sed -i '/<application>/a \        <meta-data android:name="flutterEmbedding" android:value="2" />' android/app/src/main/AndroidManifest.xml
         
         # إعادة إنشاء settings.gradle
@@ -85,7 +79,7 @@ jobs:
         # تحديث gradle-wrapper
         echo "distributionUrl=https\\://services.gradle.org/distributions/gradle-8.9-all.zip" > android/gradle/wrapper/gradle-wrapper.properties
         
-        # تحديث app/build.gradle مع NDK و desugaring
+        # تحديث app/build.gradle
         cat > android/app/build.gradle << 'APP'
         plugins {
             id "com.android.application"
@@ -105,7 +99,7 @@ jobs:
         def flutterVersionName = localProperties.getProperty('flutter.versionName', '1.0')
         
         android {
-            namespace "com.flexyemen.flex_yemen"
+            namespace "com.beata.beata"
             compileSdkVersion 34
             ndkVersion "27.0.12077973"
             
@@ -124,7 +118,7 @@ jobs:
             }
             
             defaultConfig {
-                applicationId "com.flexyemen.flex_yemen"
+                applicationId "com.beata.beata"
                 minSdkVersion 21
                 targetSdkVersion 34
                 versionCode flutterVersionCode.toInteger()
@@ -153,17 +147,11 @@ jobs:
         }
         APP
         
-        # تنظيف cache
         rm -rf ~/.gradle/caches/
         
-        # التحقق من صحة المشروع قبل البناء
-        echo "=== Running flutter pub get ==="
+        flutter clean
         flutter pub get
-        
-        echo "=== Running flutter analyze ==="
         flutter analyze
-        
-        echo "=== Building APK ==="
         flutter build apk --release --split-per-abi
         
     - name: Upload APK
