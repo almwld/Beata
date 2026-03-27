@@ -7,6 +7,7 @@ import 'support_tickets_screen.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
+
   final List<Map<String, dynamic>> _items = const [
     {'title': 'الأسئلة الشائعة', 'icon': Icons.question_answer, 'screen': FaqScreen()},
     {'title': 'تواصل معنا', 'icon': Icons.contact_mail, 'screen': ContactUsScreen()},

@@ -47,7 +47,7 @@ class FollowingScreen extends StatelessWidget {
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.goldColor,
-                      foregroundColor: AppTheme.darkTextLight,
+                      foregroundColor: Colors.white70,
                     ),
                     child: const Text(
                       'متابعة',

@@ -6,7 +6,7 @@ import 'wallet/transfer_screen.dart';
 import 'wallet/transactions_screen.dart';
 
 class WalletScreen extends StatelessWidget {
-  const WalletScreen({super.key});
+  WalletScreen({super.key});
 
   final List<Map<String, dynamic>> _services = [
     {'name': 'إيداع', 'icon': Icons.add_card, 'color': Colors.orange, 'screen': const DepositScreen()},

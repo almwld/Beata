@@ -357,15 +357,15 @@ class AdCardHorizontal extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(product.status).withOpacity(0.1),
+                            color: _getStatusColor("active").withOpacity(0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            _getStatusText(product.status),
+                            _getStatusText("active"),
                             style: TextStyle(
                               fontFamily: 'Changa',
                               fontSize: 11,
-                              color: _getStatusColor(product.status),
+                              color: _getStatusColor("active"),
                             ),
                           ),
                         ),

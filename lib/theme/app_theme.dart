@@ -16,6 +16,7 @@ class AppTheme {
   static const Color darkCard = Color(0xFF2C2C2C);
   static const Color lightCard = Color(0xFFFAFAFA);
   static const Color darkText = Color(0xFFFFFFFF);
+  static const Color darkTextLight = Color(0xFFE0E0E0);
   static const Color lightText = Color(0xFF000000);
   static const Color darkTextSecondary = Color(0xFFAAAAAA);
   static const Color lightTextSecondary = Color(0xFF666666);
