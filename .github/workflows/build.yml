@@ -22,6 +22,31 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
         
+      - name: Regenerate Android folder
+        run: |
+          # حذف android القديم إذا وجد
+          rm -rf android
+          # إنشاء android جديد
+          flutter create --platforms=android .
+          
+      - name: Configure Android build
+        run: |
+          # إضافة NDK version
+          sed -i '/android {/a\    ndkVersion "25.1.8937393"' android/app/build.gradle
+          
+          # إضافة desugaring
+          sed -i '/compileOptions {/a\        coreLibraryDesugaringEnabled true' android/app/build.gradle
+          
+          # إضافة multiDex
+          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/' android/app/build.gradle
+          sed -i '/defaultConfig {/a\        multiDexEnabled true' android/app/build.gradle
+          
+          # إضافة dependency لل desugaring
+          sed -i '/dependencies {/a\    coreLibraryDesugaring '\''com.android.tools:desugar_jdk_libs:2.0.4'\''' android/app/build.gradle
+          
+          # إضافة الأذونات
+          sed -i '/<\/application>/a\    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />' android/app/src/main/AndroidManifest.xml
+          
       - name: Verify Flutter installation
         run: flutter doctor -v
         
