@@ -26,66 +26,55 @@ jobs:
 
     - name: Create fresh Flutter project
       run: |
-        # إنشاء مشروع جديد
         flutter create --org com.flexyemen --project-name flex_yemen --platforms android .
-        
-        # نسخ الكود من المستودع
         cp -r $GITHUB_WORKSPACE/lib .
         cp -r $GITHUB_WORKSPACE/assets . 2>/dev/null || true
         cp $GITHUB_WORKSPACE/pubspec.yaml .
-        
-        # إنشاء المجلدات المطلوبة
         mkdir -p assets/images assets/icons assets/fonts assets/animations
         touch .env
-        
-        echo "=== Project created successfully ==="
         ls -la lib/
-        
+
     - name: Configure Android
       run: |
-        # إضافة الأذونات إلى AndroidManifest
         cat >> android/app/src/main/AndroidManifest.xml << 'MANIFEST'
-        <uses-permission android:name="android.permission.INTERNET" />
-        <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-        <uses-permission android:name="android.permission.CAMERA" />
-        <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 MANIFEST
         
-        # تحديث app/build.gradle
         cat >> android/app/build.gradle << 'APPGRADLE'
         
-        android {
-            ndkVersion "27.0.12077973"
-            compileOptions {
-                coreLibraryDesugaringEnabled true
-            }
-            defaultConfig {
-                multiDexEnabled true
-            }
-            buildTypes {
-                release {
-                    minifyEnabled true
-                    shrinkResources true
-                    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-                }
-            }
+android {
+    ndkVersion "27.0.12077973"
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+    }
+    defaultConfig {
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        
-        dependencies {
-            coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
-        }
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+}
 APPGRADLE
-        
+
     - name: Build APK
       run: |
         flutter pub get
         flutter build apk --release --split-per-abi
-        
-        echo "=== Build completed ==="
         ls -la build/app/outputs/flutter-apk/
-        
+
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
