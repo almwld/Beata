@@ -37,20 +37,18 @@ jobs:
           mkdir -p assets/images assets/icons assets/fonts assets/animations
           touch .env
           
-          # إضافة الأذونات بشكل صحيح باستخدام sed
+          # إضافة الأذونات فقط (بدون desugaring)
           sed -i '/<manifest/a\    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />' android/app/src/main/AndroidManifest.xml
           
-          # إضافة NDK و desugaring و multiDex بشكل صحيح
+          # إضافة NDK فقط
           sed -i '/android {/a\    ndkVersion "27.0.12077973"' android/app/build.gradle
-          sed -i '/defaultConfig {/a\        multiDexEnabled true' android/app/build.gradle
-          sed -i '/compileOptions {/a\        coreLibraryDesugaringEnabled true' android/app/build.gradle
-          sed -i '/dependencies {/a\    coreLibraryDesugaring '\''com.android.tools:desugar_jdk_libs:2.0.4'\''' android/app/build.gradle
           
           # بناء
           flutter pub get
           flutter build apk --release --split-per-abi
           
           # عرض النتيجة
+          echo "Build completed! APK files:"
           ls -la build/app/outputs/flutter-apk/
       
       - name: Upload APK
