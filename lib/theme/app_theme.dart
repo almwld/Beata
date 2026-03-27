@@ -1,164 +1,82 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF4CAF50);
-  static const Color secondaryColor = Color(0xFFFF9800);
-  static const Color goldColor = Color(0xFFFFD700);
-  static const Color goldLight = Color(0xFFFFF0B5);
-  static const Color error = Color(0xFFE53935);
-  static const Color success = Color(0xFF4CAF50);
-  static const Color info = Color(0xFF2196F3);
-  static const Color warning = Color(0xFFFFC107);
+  static const Color goldColor = Color(0xFFD4AF37);
+  static const Color goldLight = Color(0xFFF4D03F);
+  static const Color goldPrimary = Color(0xFFC6A700);
+  static const Color error = Color(0xFFE74C3C);
+  static const Color success = Color(0xFF2ECC71);
+  static const Color info = Color(0xFF3498DB);
+  static const Color warning = Color(0xFFF39C12);
   
-  // Light theme colors
-  static const Color lightBackground = Color(0xFFF5F5F5);
-  static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightCard = Color(0xFFFFFFFF);
-  static const Color lightText = Color(0xFF212121);
-  static const Color lightTextSecondary = Color(0xFF757575);
-  static const Color darkTextSecondary = Color(0xFFB0B0B0);
-  static const Color lightDivider = Color(0xFFE0E0E0);
-  static const Color darkText = Color(0xFF212121);
-  
-  // Dark theme colors
-  static const Color darkBackground = Color(0xFF121212);
   static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color lightSurface = Color(0xFFFFFFFF);
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color lightBackground = Color(0xFFF5F5F5);
   static const Color darkCard = Color(0xFF2C2C2C);
-  static const Color darkTextLight = Color(0xFFFFFFFF);
-  static const Color darkSecondaryText = Color(0xFFB0B0B0);
+  static const Color lightCard = Color(0xFFFAFAFA);
+  static const Color darkText = Color(0xFFFFFFFF);
+  static const Color lightText = Color(0xFF000000);
+  static const Color darkTextSecondary = Color(0xFFAAAAAA);
+  static const Color lightTextSecondary = Color(0xFF666666);
   static const Color darkDivider = Color(0xFF3C3C3C);
-  
-  // Gradients
+  static const Color lightDivider = Color(0xFFE0E0E0);
+
   static const LinearGradient goldGradient = LinearGradient(
-    colors: [Color(0xFFFFD700), Color(0xFFFFB347)],
+    colors: [goldColor, goldLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-  
-  // Helper methods
-  static Color getTextColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? darkTextLight : lightText;
+
+  static ThemeData get lightTheme {
+    return ThemeData(
+      brightness: Brightness.light,
+      primaryColor: goldColor,
+      scaffoldBackgroundColor: lightBackground,
+      cardColor: lightCard,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: lightSurface,
+        foregroundColor: Colors.black87,
+        elevation: 0,
+      ),
+    );
   }
-  
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: goldColor,
+      scaffoldBackgroundColor: darkBackground,
+      cardColor: darkCard,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: darkSurface,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+    );
+  }
+
+  static Color getTextColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? darkText : lightText;
+  }
+
+  static Color getSecondaryTextColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? darkTextSecondary : lightTextSecondary;
+  }
+
   static Color getBackgroundColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark ? darkBackground : lightBackground;
   }
-  
+
   static Color getCardColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark ? darkCard : lightCard;
   }
-  
-  static Color getSecondaryTextColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? darkSecondaryText : lightTextSecondary;
-  }
-  
-  static Color getDividerColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? darkDivider : lightDivider;
-  }
-  
+
   static Color getSurfaceColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark ? darkSurface : lightSurface;
   }
-  
-  static ThemeData lightTheme = ThemeData(
-    brightness: Brightness.light,
-    primaryColor: primaryColor,
-    scaffoldBackgroundColor: lightBackground,
-    colorScheme: const ColorScheme.light(
-      primary: primaryColor,
-      secondary: secondaryColor,
-      surface: lightSurface,
-      error: error,
-    ),
-    appBarTheme: const AppBarTheme(
-      elevation: 0,
-      centerTitle: true,
-      backgroundColor: Colors.transparent,
-      foregroundColor: lightText,
-    ),
-    cardTheme: CardThemeData(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      color: lightCard,
-    ),
-    dividerColor: lightDivider,
-    textTheme: const TextTheme(
-      headlineLarge: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: lightText,
-      ),
-      headlineMedium: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: lightText,
-      ),
-      bodyLarge: TextStyle(
-        fontSize: 16,
-        color: lightText,
-      ),
-      bodyMedium: TextStyle(
-        fontSize: 14,
-        color: lightTextSecondary,
-      ),
-      labelLarge: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: lightText,
-      ),
-    ),
-  );
-  
-  static ThemeData darkTheme = ThemeData(
-    brightness: Brightness.dark,
-    primaryColor: primaryColor,
-    scaffoldBackgroundColor: darkBackground,
-    colorScheme: const ColorScheme.dark(
-      primary: primaryColor,
-      secondary: secondaryColor,
-      surface: darkSurface,
-      error: error,
-    ),
-    appBarTheme: const AppBarTheme(
-      elevation: 0,
-      centerTitle: true,
-      backgroundColor: Colors.transparent,
-      foregroundColor: darkTextLight,
-    ),
-    cardTheme: CardThemeData(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      color: darkCard,
-    ),
-    dividerColor: darkDivider,
-    textTheme: const TextTheme(
-      headlineLarge: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: darkTextLight,
-      ),
-      headlineMedium: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: darkTextLight,
-      ),
-      bodyLarge: TextStyle(
-        fontSize: 16,
-        color: darkTextLight,
-      ),
-      bodyMedium: TextStyle(
-        fontSize: 14,
-        color: darkSecondaryText,
-      ),
-      labelLarge: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: darkTextLight,
-      ),
-    ),
-  );
+
+  static Color getDividerColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? darkDivider : lightDivider;
+  }
 }
