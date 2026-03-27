@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import 'wallet/deposit_screen.dart';
 import 'wallet/withdraw_screen.dart';
@@ -45,28 +44,16 @@ class WalletScreen extends StatelessWidget {
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'الرصيد الحالي',
-                    style: TextStyle(color: Colors.white, fontSize: 14),
-                  ),
+                  Text('الرصيد الحالي', style: TextStyle(color: Colors.white, fontSize: 14)),
                   SizedBox(height: 8),
-                  Text(
-                    '0 ريال',
-                    style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
-                  ),
+                  Text('0 ريال', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
                   SizedBox(height: 8),
-                  Text(
-                    'آخر تحديث: اليوم',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
+                  Text('آخر تحديث: اليوم', style: TextStyle(color: Colors.white70, fontSize: 12)),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'الخدمات المالية',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            const Text('الخدمات المالية', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             GridView.builder(
               shrinkWrap: true,

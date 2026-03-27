@@ -1,7 +1,5 @@
-import 'package:flex_yemen/models/rating_model.dart';
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
 
@@ -32,7 +30,7 @@ class _BanksScreenState extends State<BanksScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'بنوك'),
+      appBar: AppBar(title: const Text('بنوك')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -59,33 +57,20 @@ class _BanksScreenState extends State<BanksScreen> {
             ),
             const SizedBox(height: 16),
             if (_selectedBank != null) ...[
-              CustomTextField(
+              TextField(
                 controller: _accountController,
-                label: 'رقم الحساب',
-                prefixIcon: Icons.numbers,
+                decoration: const InputDecoration(labelText: 'رقم الحساب', border: OutlineInputBorder()),
               ),
               const SizedBox(height: 16),
-              CustomTextField(
+              TextField(
                 controller: _amountController,
-                label: 'المبلغ',
-                prefixIcon: Icons.attach_money,
                 keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'المبلغ', border: OutlineInputBorder()),
               ),
               const SizedBox(height: 24),
               CustomButton(
                 text: 'تحويل إلى البنك',
-                onPressed: (_accountController.text.isEmpty || _amountController.text.isEmpty)
-                    ? null
-                    : () {
-                        setState(() => _isLoading = true);
-                        Future.delayed(const Duration(seconds: 2), () {
-                          setState(() => _isLoading = false);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('تمت عملية التحويل بنجاح')),
-                          );
-                          Navigator.pop(context);
-                        });
-                      },
+                onPressed: (_accountController.text.isEmpty || _amountController.text.isEmpty) ? null : () {},
                 isLoading: _isLoading,
               ),
             ],
