@@ -29,8 +29,9 @@ jobs:
         run: |
           # إنشاء مشروع Flutter جديد في مجلد مؤقت
           cd /tmp
-          flutter create --org com.flexyemen --project-name flexyemen --platforms android .
-          cd flexyemen
+          rm -rf flexyemen_build
+          flutter create --org com.flexyemen --project-name flexyemen_build .
+          cd flexyemen_build
           
           # نسخ الكود من المستودع
           cp -r $GITHUB_WORKSPACE/lib .
@@ -70,4 +71,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: flex-yemen-app
-          path: /tmp/flexyemen/build/app/outputs/flutter-apk/*.apk
+          path: /tmp/flexyemen_build/build/app/outputs/flutter-apk/*.apk
