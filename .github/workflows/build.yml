@@ -27,16 +27,17 @@ jobs:
 
       - name: Build APK
         run: |
-          # إنشاء مشروع Flutter جديد في مجلد مؤقت
-          cd /tmp
-          rm -rf flexyemen_build
-          flutter create --org com.flexyemen --project-name flexyemen_build .
-          cd flexyemen_build
+          # إنشاء مجلد مؤقت للمشروع
+          mkdir -p /tmp/flexyemen
+          cd /tmp/flexyemen
           
-          # نسخ الكود من المستودع
-          cp -r $GITHUB_WORKSPACE/lib .
-          cp -r $GITHUB_WORKSPACE/assets . 2>/dev/null || true
-          cp $GITHUB_WORKSPACE/pubspec.yaml .
+          # إنشاء مشروع Flutter (هذا سينشئ الملفات في المجلد الحالي)
+          flutter create --org com.flexyemen --project-name flexyemen .
+          
+          # نسخ الكود من المستودع (تجاوز الملفات الموجودة)
+          cp -rf $GITHUB_WORKSPACE/lib .
+          cp -rf $GITHUB_WORKSPACE/assets . 2>/dev/null || true
+          cp -f $GITHUB_WORKSPACE/pubspec.yaml .
           
           # إنشاء مجلدات assets
           mkdir -p assets/images assets/icons assets/fonts assets/animations
@@ -71,4 +72,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: flex-yemen-app
-          path: /tmp/flexyemen_build/build/app/outputs/flutter-apk/*.apk
+          path: /tmp/flexyemen/build/app/outputs/flutter-apk/*.apk
