@@ -21,35 +21,43 @@ jobs:
 
       - name: Create fresh Flutter project
         run: |
-          mkdir -p /tmp/fresh_project
-          cd /tmp/fresh_project
+          # إنشاء مشروع جديد في /tmp
+          cd /tmp
+          rm -rf flexy
           flutter create --org com.flexyemen --project-name flexy .
-          cp -r ${{ github.workspace }}/lib /tmp/fresh_project/
-          cp -r ${{ github.workspace }}/assets /tmp/fresh_project/ 2>/dev/null || true
-          cp ${{ github.workspace }}/pubspec.yaml /tmp/fresh_project/
-          rm -rf ${{ github.workspace }}/android ${{ github.workspace }}/ios
-          cp -r /tmp/fresh_project/android ${{ github.workspace }}/
-          cp -r /tmp/fresh_project/ios ${{ github.workspace }}/ 2>/dev/null || true
-          cp /tmp/fresh_project/pubspec.yaml ${{ github.workspace }}/
-          cd ${{ github.workspace }}
-          flutter clean
-          flutter pub get
+          cd flexy
           
-          # إضافة coreLibraryDesugaring باستخدام sed
+          # نسخ الكود من المستودع
+          cp -r ${{ github.workspace }}/lib .
+          cp -r ${{ github.workspace }}/assets . 2>/dev/null || true
+          cp ${{ github.workspace }}/pubspec.yaml .
+          
+          # إنشاء مجلدات assets
+          mkdir -p assets/images assets/icons assets/fonts assets/animations
+          touch .env
+          
+          # إضافة coreLibraryDesugaring
           sed -i '/android {/a\    compileOptions {\n        coreLibraryDesugaringEnabled true\n    }' android/app/build.gradle
           sed -i '/dependencies {/a\    coreLibraryDesugaring '\''com.android.tools:desugar_jdk_libs:2.0.4'\''' android/app/build.gradle
           
-          # إضافة الأذونات باستخدام sed في المكان الصحيح (قبل </manifest>)
+          # إضافة الأذونات
           sed -i '/<\/manifest>/i\    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />' android/app/src/main/AndroidManifest.xml
           
           # تحديث minSdkVersion
           sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/' android/app/build.gradle
-
-      - name: Build APK
-        run: flutter build apk --release
+          
+          # تثبيت الاعتماديات
+          flutter pub get
+          
+          # بناء APK
+          flutter build apk --release
+          
+          # نسخ APK إلى مسار العمل
+          mkdir -p ${{ github.workspace }}/output
+          cp build/app/outputs/flutter-apk/app-release.apk ${{ github.workspace }}/output/ 2>/dev/null || true
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: flex-yemen-app
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: /tmp/flexy/build/app/outputs/flutter-apk/app-release.apk
