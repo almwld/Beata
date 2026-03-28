@@ -35,36 +35,33 @@ jobs:
           flutter clean
           flutter pub get
           
-          # إضافة coreLibraryDesugaring بشكل صحيح
-          cat >> android/app/build.gradle << 'GRADLE'
+          # إضافة coreLibraryDesugaring
+          echo "" >> android/app/build.gradle
+          echo "android {" >> android/app/build.gradle
+          echo "    compileOptions {" >> android/app/build.gradle
+          echo "        coreLibraryDesugaringEnabled true" >> android/app/build.gradle
+          echo "    }" >> android/app/build.gradle
+          echo "}" >> android/app/build.gradle
+          echo "" >> android/app/build.gradle
+          echo "dependencies {" >> android/app/build.gradle
+          echo "    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'" >> android/app/build.gradle
+          echo "}" >> android/app/build.gradle
           
-          android {
-              compileOptions {
-                  coreLibraryDesugaringEnabled true
-              }
-          }
+          # إضافة الأذونات
+          echo "" >> android/app/src/main/AndroidManifest.xml
+          echo '    <uses-permission android:name="android.permission.INTERNET" />' >> android/app/src/main/AndroidManifest.xml
+          echo '    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />' >> android/app/src/main/AndroidManifest.xml
+          echo '    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />' >> android/app/src/main/AndroidManifest.xml
+          echo '    <uses-permission android:name="android.permission.CAMERA" />' >> android/app/src/main/AndroidManifest.xml
+          echo '    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />' >> android/app/src/main/AndroidManifest.xml
+          echo '    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />' >> android/app/src/main/AndroidManifest.xml
+          echo '    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />' >> android/app/src/main/AndroidManifest.xml
+          echo '    <uses-permission android:name="android.permission.VIBRATE" />' >> android/app/src/main/AndroidManifest.xml
+          echo '    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />' >> android/app/src/main/AndroidManifest.xml
           
-          dependencies {
-              coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
-          }
-GRADLE
-          
-          # إضافة الأذونات المطلوبة
-          cat >> android/app/src/main/AndroidManifest.xml << 'MANIFEST'
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-MANIFEST
-          
-          # تحديث minSdkVersion إلى 21 (مطلوب لل desugaring)
+          # تحديث minSdkVersion
           sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/' android/app/build.gradle
-          
+
       - name: Build APK
         run: flutter build apk --release
 
