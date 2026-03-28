@@ -35,17 +35,18 @@ jobs:
           mkdir -p android/app/src/main/res/mipmap-xxhdpi
           mkdir -p android/app/src/main/res/mipmap-xxxhdpi
           
-          # إنشاء أيقونة وهمية (1x1 بكسل PNG)
+          # إنشاء أيقونة وهمية
           echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==' | base64 -d > android/app/src/main/res/mipmap-hdpi/ic_launcher.png
           cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
           cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
           cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
           cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           
-          # gradle.properties لتفعيل AndroidX
+          # gradle.properties
           echo 'android.useAndroidX=true
           android.enableJetifier=true' > android/gradle.properties
           
+          # build.gradle (root)
           echo 'buildscript {
               ext.kotlin_version = "1.9.22"
               repositories {
@@ -74,6 +75,7 @@ jobs:
               delete rootProject.buildDir
           }' > android/build.gradle
           
+          # app/build.gradle
           echo 'def localProperties = new Properties()
           def localPropertiesFile = rootProject.file("local.properties")
           if (localPropertiesFile.exists()) {
@@ -145,6 +147,7 @@ jobs:
               </application>
           </manifest>' > android/app/src/main/AndroidManifest.xml
           
+          # MainActivity.kt صحيح
           echo 'package com.flexyemen.flex_yemen
           import io.flutter.embedding.android.FlutterActivity
           class MainActivity: FlutterActivity()' > android/app/src/main/kotlin/com/flexyemen/flex_yemen/MainActivity.kt
@@ -162,6 +165,9 @@ jobs:
           </layer-list>' > android/app/src/main/res/drawable/launch_background.xml
           
           echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
+          
+          # التحقق من ملف MainActivity.kt
+          cat android/app/src/main/kotlin/com/flexyemen/flex_yemen/MainActivity.kt
 
       - name: Get dependencies
         run: flutter pub get
