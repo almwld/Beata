@@ -16,14 +16,11 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-  
-  // عرض الشاشة فوراً بدون انتظار
-  bool _showOffline = true;
-  bool _isSupabaseReady = false;
 
   @override
   void initState() {
     super.initState();
+    
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -45,8 +42,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
     
-    // عرض الشاشة فوراً والتحقق من Supabase في الخلفية
-    _checkSupabaseStatus();
+    // الانتقال بعد 3 ثواني
+    _navigateToNextScreen();
   }
 
   @override
@@ -55,28 +52,14 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
-  Future<void> _checkSupabaseStatus() async {
-    // انتظر 2 ثانية ثم تحقق من Supabase
-    await Future.delayed(const Duration(seconds: 2));
+  Future<void> _navigateToNextScreen() async {
+    await Future.delayed(const Duration(seconds: 3));
+    if (!mounted) return;
     
-    // تحقق مما إذا كان Supabase جاهزاً
+    // التحقق من حالة تسجيل الدخول
     if (SupabaseService.isAuthenticated) {
-      setState(() {
-        _showOffline = false;
-        _isSupabaseReady = true;
-      });
-      // انتقل للصفحة الرئيسية فوراً
       Navigator.pushReplacementNamed(context, '/main');
     } else {
-      // إذا لم يكن جاهزاً، استمر في عرض الشاشة مع مؤشر تحميل
-      setState(() {
-        _showOffline = false;
-      });
-    }
-    
-    // انتظر حتى 10 ثواني ثم انتقل للتسجيل إذا لم يكن متصلاً
-    await Future.delayed(const Duration(seconds: 8));
-    if (mounted && !_isSupabaseReady) {
       Navigator.pushReplacementNamed(context, '/login');
     }
   }
@@ -88,6 +71,8 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.lightBackground,
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -106,10 +91,10 @@ class _SplashScreenState extends State<SplashScreen>
               AnimatedBuilder(
                 animation: _controller,
                 builder: (context, child) {
-                  return FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: ScaleTransition(
-                      scale: _scaleAnimation,
+                  return Opacity(
+                    opacity: _fadeAnimation.value,
+                    child: Transform.scale(
+                      scale: _scaleAnimation.value,
                       child: Container(
                         width: 150,
                         height: 150,
@@ -138,64 +123,61 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               const SizedBox(height: 40),
               // اسم التطبيق
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'FLEX',
-                      style: TextStyle(
-                        fontFamily: 'Changa',
-                        fontSize: 42,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.goldColor,
-                      ),
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: _fadeAnimation.value,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'FLEX',
+                          style: TextStyle(
+                            fontFamily: 'Changa',
+                            fontSize: 42,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.goldColor,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'YEMEN',
+                          style: TextStyle(
+                            fontFamily: 'Changa',
+                            fontSize: 28,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.goldLight,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'YEMEN',
-                      style: TextStyle(
-                        fontFamily: 'Changa',
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.goldLight,
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
               const SizedBox(height: 16),
               // الشعار الفرعي
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: Text(
-                  'منصة التجارة الإلكترونية اليمنية',
-                  style: TextStyle(
-                    fontFamily: 'Changa',
-                    fontSize: 16,
-                    color: isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary,
-                  ),
-                ),
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: _fadeAnimation.value,
+                    child: Text(
+                      'منصة التجارة الإلكترونية اليمنية',
+                      style: TextStyle(
+                        fontFamily: 'Changa',
+                        fontSize: 16,
+                        color: isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary,
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 60),
               // مؤشر التحميل
               const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(AppTheme.goldColor),
                 strokeWidth: 3,
-              ),
-              const SizedBox(height: 16),
-              // رسالة حالة الاتصال
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: Text(
-                  _showOffline ? 'جاري تحميل البيانات...' : 'جاري الاتصال بالخادم...',
-                  style: TextStyle(
-                    fontFamily: 'Changa',
-                    fontSize: 12,
-                    color: isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary,
-                  ),
-                ),
               ),
             ],
           ),

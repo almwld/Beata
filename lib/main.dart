@@ -72,7 +72,7 @@ import 'screens/wallet/receive_transfer_request_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // تهيئة التخزين المحلي فقط (سريع)
+  // تهيئة التخزين المحلي
   await LocalStorageService.init();
   
   // تحميل متغيرات البيئة
@@ -91,25 +91,18 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(const MyApp());
-  
-  // تهيئة Supabase في الخلفية بعد 10 ثواني
-  _initializeSupabaseInBackground();
-}
-
-void _initializeSupabaseInBackground() async {
-  // انتظر 10 ثواني قبل تهيئة Supabase
-  await Future.delayed(const Duration(seconds: 10));
-  
+  // تهيئة Supabase (بدون تأخير)
   try {
     await Supabase.initialize(
       url: dotenv.env['SUPABASE_URL']!,
       anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     );
-    print('✅ Supabase initialized in background after 10 seconds');
+    print('✅ Supabase initialized successfully');
   } catch (e) {
     print('❌ Supabase initialization failed: $e');
   }
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
