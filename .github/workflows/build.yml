@@ -21,14 +21,12 @@ jobs:
 
       - name: Create fresh Flutter project and build
         run: |
-          cd /tmp
-          flutter create --org com.flexyemen .
+          # إنشاء مجلد مؤقت باسم محدد
+          mkdir -p /tmp/flexyemen_build
+          cd /tmp/flexyemen_build
           
-          # العثور على اسم المشروع الذي تم إنشاؤه
-          PROJECT_NAME=$(ls -d */ | head -1 | sed 's/\/$//')
-          echo "Project name: $PROJECT_NAME"
-          
-          cd $PROJECT_NAME
+          # إنشاء مشروع Flutter في هذا المجلد
+          flutter create --org com.flexyemen --project-name flexyemen .
           
           # نسخ الكود من المستودع
           cp -r ${{ github.workspace }}/lib .
@@ -55,12 +53,9 @@ jobs:
           
           # عرض النتيجة
           ls -la build/app/outputs/flutter-apk/
-          
-          # حفظ مسار APK للمرحلة التالية
-          echo "APK_PATH=/tmp/$PROJECT_NAME/build/app/outputs/flutter-apk/app-release.apk" >> $GITHUB_ENV
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: flex-yemen-app
-          path: /tmp/*/build/app/outputs/flutter-apk/app-release.apk
+          path: /tmp/flexyemen_build/build/app/outputs/flutter-apk/app-release.apk
