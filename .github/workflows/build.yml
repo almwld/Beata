@@ -19,13 +19,11 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Create fresh Flutter project
+      - name: Create fresh Flutter project and build
         run: |
-          # إنشاء مشروع جديد في /tmp
           cd /tmp
-          rm -rf flexy
-          flutter create --org com.flexyemen --project-name flexy .
-          cd flexy
+          flutter create --org com.flexyemen --project-name flexyemen .
+          cd flexyemen
           
           # نسخ الكود من المستودع
           cp -r ${{ github.workspace }}/lib .
@@ -46,18 +44,15 @@ jobs:
           # تحديث minSdkVersion
           sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/' android/app/build.gradle
           
-          # تثبيت الاعتماديات
+          # تثبيت الاعتماديات وبناء
           flutter pub get
-          
-          # بناء APK
           flutter build apk --release
           
-          # نسخ APK إلى مسار العمل
-          mkdir -p ${{ github.workspace }}/output
-          cp build/app/outputs/flutter-apk/app-release.apk ${{ github.workspace }}/output/ 2>/dev/null || true
+          # عرض النتيجة
+          ls -la build/app/outputs/flutter-apk/
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: flex-yemen-app
-          path: /tmp/flexy/build/app/outputs/flutter-apk/app-release.apk
+          path: /tmp/flexyemen/build/app/outputs/flutter-apk/app-release.apk
