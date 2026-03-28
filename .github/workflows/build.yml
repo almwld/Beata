@@ -13,49 +13,61 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.22.0'
           channel: 'stable'
-          cache: true
 
-      - name: Create fresh Flutter project and build
+      - name: Build APK
         run: |
-          # إنشاء مجلد مؤقت باسم محدد
-          mkdir -p /tmp/flexyemen_build
-          cd /tmp/flexyemen_build
-          
-          # إنشاء مشروع Flutter في هذا المجلد
-          flutter create --org com.flexyemen --project-name flexyemen .
+          # إنشاء مشروع Flutter جديد في مجلد مؤقت
+          cd /tmp
+          flutter create --org com.flexyemen --project-name flexyemen --platforms android .
+          cd flexyemen
           
           # نسخ الكود من المستودع
-          cp -r ${{ github.workspace }}/lib .
-          cp -r ${{ github.workspace }}/assets . 2>/dev/null || true
-          cp ${{ github.workspace }}/pubspec.yaml .
+          cp -r $GITHUB_WORKSPACE/lib .
+          cp -r $GITHUB_WORKSPACE/assets . 2>/dev/null || true
+          cp $GITHUB_WORKSPACE/pubspec.yaml .
           
           # إنشاء مجلدات assets
           mkdir -p assets/images assets/icons assets/fonts assets/animations
           touch .env
           
+          # تحديث minSdkVersion إلى 21
+          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/' android/app/build.gradle
+          
           # إضافة coreLibraryDesugaring
           sed -i '/android {/a\    compileOptions {\n        coreLibraryDesugaringEnabled true\n    }' android/app/build.gradle
           sed -i '/dependencies {/a\    coreLibraryDesugaring '\''com.android.tools:desugar_jdk_libs:2.0.4'\''' android/app/build.gradle
           
+          # إضافة NDK version
+          sed -i '/android {/a\    ndkVersion "27.0.12077973"' android/app/build.gradle
+          
+          # إضافة multiDexEnabled
+          sed -i '/defaultConfig {/a\        multiDexEnabled true' android/app/build.gradle
+          
           # إضافة الأذونات
           sed -i '/<\/manifest>/i\    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />' android/app/src/main/AndroidManifest.xml
           
-          # تحديث minSdkVersion
-          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/' android/app/build.gradle
-          
-          # تثبيت الاعتماديات وبناء
+          # تثبيت الاعتماديات
           flutter pub get
+          
+          # بناء APK
           flutter build apk --release
           
-          # عرض النتيجة
+          echo "=== Build completed ==="
           ls -la build/app/outputs/flutter-apk/
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: flex-yemen-app
-          path: /tmp/flexyemen_build/build/app/outputs/flutter-apk/app-release.apk
+          path: /tmp/flexyemen/build/app/outputs/flutter-apk/*.apk
