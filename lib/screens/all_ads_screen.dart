@@ -1,30 +1,104 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_theme.dart';
-import '../../widgets/custom_app_bar.dart';
-import '../../widgets/ad_card.dart';
+import '../models/product_model.dart';
+import '../services/supabase_service.dart';
+import '../widgets/ad_card.dart';
+import '../widgets/loading_widget.dart';
+import '../widgets/empty_state.dart';
 
-class AllAdsScreen extends StatelessWidget {
-  const AllAdsScreen({super.key});
+class AllAdsScreen extends StatefulWidget {
+  final String? category;
+  final String? searchQuery;
+  
+  const AllAdsScreen({super.key, this.category, this.searchQuery});
+
+  @override
+  State<AllAdsScreen> createState() => _AllAdsScreenState();
+}
+
+class _AllAdsScreenState extends State<AllAdsScreen> {
+  List<ProductModel> _allAds = [];
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAds();
+  }
+
+  Future<void> _loadAds() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final products = await SupabaseService.getProducts(
+        category: widget.category,
+        searchQuery: widget.searchQuery,
+      );
+      setState(() {
+        _allAds = products;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.lightBackground,
-      appBar: const CustomAppBar(title: 'جميع الإعلانات'),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 0.75, crossAxisSpacing: 12, mainAxisSpacing: 12),
-        itemCount: 10,
-        itemBuilder: (context, index) => AdCard(
-          product: _getDummyProduct(index),
-          onTap: () => Navigator.pushNamed(context, '/ad_detail'),
-        ),
+      appBar: AppBar(
+        title: Text(widget.category ?? (widget.searchQuery != null ? 'نتائج البحث' : 'جميع الإعلانات')),
       ),
+      body: _isLoading
+          ? const LoadingWidget(message: 'جاري التحميل...')
+          : _error != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('حدث خطأ: $_error'),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _loadAds,
+                        child: const Text('إعادة المحاولة'),
+                      ),
+                    ],
+                  ),
+                )
+              : _allAds.isEmpty
+                  ? const EmptyState(
+                      icon: Icons.inbox_outlined,
+                      title: 'لا توجد إعلانات',
+                      subtitle: 'لم يتم العثور على إعلانات',
+                    )
+                  : GridView.builder(
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.75,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+                      itemCount: _allAds.length,
+                      itemBuilder: (context, index) {
+                        return AdCard(
+                          product: _allAds[index],
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/ad_detail',
+                              arguments: _allAds[index],
+                            );
+                          },
+                        );
+                      },
+                    ),
     );
-  }
-
-  _getDummyProduct(int index) {
-    return null; // سيتم استبداله بالنموذج الحقيقي
   }
 }
