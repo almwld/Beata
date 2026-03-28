@@ -4,7 +4,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../services/supabase_service.dart';
 import '../theme/app_theme.dart';
 
-/// شاشة الترحيب
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -17,6 +16,10 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  
+  // عرض الشاشة فوراً بدون انتظار
+  bool _showOffline = true;
+  bool _isSupabaseReady = false;
 
   @override
   void initState() {
@@ -41,7 +44,9 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _controller.forward();
-    _navigateToNextScreen();
+    
+    // عرض الشاشة فوراً والتحقق من Supabase في الخلفية
+    _checkSupabaseStatus();
   }
 
   @override
@@ -50,15 +55,28 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
-  Future<void> _navigateToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 3));
-
-    if (!mounted) return;
-
-    // التحقق من حالة تسجيل الدخول
+  Future<void> _checkSupabaseStatus() async {
+    // انتظر 2 ثانية ثم تحقق من Supabase
+    await Future.delayed(const Duration(seconds: 2));
+    
+    // تحقق مما إذا كان Supabase جاهزاً
     if (SupabaseService.isAuthenticated) {
+      setState(() {
+        _showOffline = false;
+        _isSupabaseReady = true;
+      });
+      // انتقل للصفحة الرئيسية فوراً
       Navigator.pushReplacementNamed(context, '/main');
     } else {
+      // إذا لم يكن جاهزاً، استمر في عرض الشاشة مع مؤشر تحميل
+      setState(() {
+        _showOffline = false;
+      });
+    }
+    
+    // انتظر حتى 10 ثواني ثم انتقل للتسجيل إذا لم يكن متصلاً
+    await Future.delayed(const Duration(seconds: 8));
+    if (mounted && !_isSupabaseReady) {
       Navigator.pushReplacementNamed(context, '/login');
     }
   }
@@ -96,7 +114,9 @@ class _SplashScreenState extends State<SplashScreen>
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                          gradient: AppTheme.goldGradient,
+                          gradient: const LinearGradient(
+                            colors: [AppTheme.goldColor, AppTheme.goldLight],
+                          ),
                           borderRadius: BorderRadius.circular(30),
                           boxShadow: [
                             BoxShadow(
@@ -154,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen>
                   style: TextStyle(
                     fontFamily: 'Changa',
                     fontSize: 16,
-                    color: AppTheme.getSecondaryTextColor(context),
+                    color: isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary,
                   ),
                 ),
               ),
@@ -164,13 +184,20 @@ class _SplashScreenState extends State<SplashScreen>
                 valueColor: AlwaysStoppedAnimation<Color>(AppTheme.goldColor),
                 strokeWidth: 3,
               ),
-            ].animate(
-              interval: const Duration(milliseconds: 100),
-            ).fadeIn().slideY(
-              begin: 0.3,
-              end: 0,
-              duration: const Duration(milliseconds: 600),
-            ),
+              const SizedBox(height: 16),
+              // رسالة حالة الاتصال
+              FadeTransition(
+                opacity: _fadeAnimation,
+                child: Text(
+                  _showOffline ? 'جاري تحميل البيانات...' : 'جاري الاتصال بالخادم...',
+                  style: TextStyle(
+                    fontFamily: 'Changa',
+                    fontSize: 12,
+                    color: isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

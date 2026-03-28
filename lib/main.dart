@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'providers/theme_manager.dart';
 import 'services/cache/local_storage_service.dart';
+import 'services/supabase_service.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
@@ -71,17 +72,11 @@ import 'screens/wallet/receive_transfer_request_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // تهيئة التخزين المحلي
+  // تهيئة التخزين المحلي فقط (سريع)
   await LocalStorageService.init();
-
+  
   // تحميل متغيرات البيئة
   await dotenv.load(fileName: ".env");
-
-  // تهيئة Supabase
-  await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
-  );
 
   // إعدادات النظام
   SystemChrome.setSystemUIOverlayStyle(
@@ -97,6 +92,24 @@ void main() async {
   ]);
 
   runApp(const MyApp());
+  
+  // تهيئة Supabase في الخلفية بعد 10 ثواني
+  _initializeSupabaseInBackground();
+}
+
+void _initializeSupabaseInBackground() async {
+  // انتظر 10 ثواني قبل تهيئة Supabase
+  await Future.delayed(const Duration(seconds: 10));
+  
+  try {
+    await Supabase.initialize(
+      url: dotenv.env['SUPABASE_URL']!,
+      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    );
+    print('✅ Supabase initialized in background after 10 seconds');
+  } catch (e) {
+    print('❌ Supabase initialization failed: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -162,7 +175,6 @@ class MyApp extends StatelessWidget {
               '/about': (context) => const AboutScreen(),
               '/privacy_policy': (context) => const PrivacyPolicyScreen(),
               '/help_support': (context) => const HelpSupportScreen(),
-              // صفحات المحفظة
               '/deposit': (context) => const DepositScreen(),
               '/withdraw': (context) => const WithdrawScreen(),
               '/transfer': (context) => const TransferScreen(),
